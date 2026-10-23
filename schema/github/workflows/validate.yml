@@ -1,1 +1,26 @@
-name: Validate Dataset Schema on: push: branches: [ main ] pull_request: branches: [ main ] jobs: validate: runs-on: ubuntu-latest steps: - name: Checkout Repository uses: actions/checkout@v4 - name: Set up Python uses: actions/setup-python@v5 with: python-version: '3.10' - name: Install Dependencies run: python -m pip install --upgrade pip && pip install jsonschema - name: Run Schema Validation run: python -c "import json, jsonschema; schema = json.load(open('schema/dataset_entry.json')); entries = json.load(open('data/sample_entries.json')); [jsonschema.validate(instance=e, schema=schema) for e in entries]; print('All dataset entries passed schema validation!')"
+name: Validate Dataset Schema
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: python -m pip install --upgrade pip && pip install jsonschema
+
+      - name: Run Schema Validation
+        run: python -c "import json, jsonschema; schema = json.load(open('schema/dataset_entry.json')); entries = json.load(open('data/sample_entries.json')); [jsonschema.validate(instance=e, schema=schema) for e in entries]; print('All dataset entries passed schema validation!')"
+        
