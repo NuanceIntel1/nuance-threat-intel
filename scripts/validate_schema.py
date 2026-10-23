@@ -1,0 +1,5 @@
+import json import sys
+  REQUIRED_FIELDS = ["entry_id", "date_collected", "location", "language_dialect", "context_tag", "raw_data_text", "key_slang_words_used", "integrity_verification"]
+def check_entry(entry, seen_ids): eid = entry.get("entry_id") if not eid or eid in seen_ids: return 1 seen_ids.add(eid) for f in REQUIRED_FIELDS: if not entry.get(f): return 1 if not isinstance(entry.get("key_slang_words_used"), list): return 1 return 0
+def validate_dataset(file_path): try: with open(file_path, 'r', encoding='utf-8') as f: data = json.load(f) except Exception as e: print(f"JSON Error: {e}") return False if not isinstance(data, list): return False seen_ids, errors = set(), 0 for idx, entry in enumerate(data, start=1): errors += check_entry(entry, seen_ids) if errors == 0: print(f"SUCCESS: All {len(data)} entries passed validation!") return True print(f"FAILURE: {errors} error(s) found.") return False  
+  if name == "main": target = sys.argv[1] if len(sys.argv) > 1 else "data/sample_entries.json" sys.exit(0 if validate_dataset(target) else 1)
